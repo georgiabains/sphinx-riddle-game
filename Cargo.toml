@@ -6,3 +6,6 @@ edition = "2024"
 [[bin]]
 name = "sphinx-riddle-game"
 path = "src/main.rs"
+
+[dependencies]
+data-encoding = "2.11.1"
