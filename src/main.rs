@@ -1,10 +1,16 @@
+mod riddles;
+
 use std::io;
+use riddles::RIDDLES;
 
 fn main() {
   println!("The Sphinx asks you the following question:");
 
   let riddle = "There are two sisters: one gives birth to the other and she, in turn, gives birth to the first. Who are the two sisters?";
   let answer = ["dayandnight", "day&night"];
+
+  println!("{}", RIDDLES[1].get_question().to_string());
+  println!("{}", RIDDLES[1].get_answer().to_string());
 
   println!("{riddle}");
 
