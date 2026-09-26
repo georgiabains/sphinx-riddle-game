@@ -2,31 +2,33 @@ mod riddles;
 
 use std::io;
 use riddles::RIDDLES;
-
 use data_encoding::BASE64;
 
-fn main() {
+fn main() { 
+  let riddle_index = 0; // TODO: Choose random index
+
+  // Decode riddle's question or answer
+  fn decode_riddle(index: usize, is_question: bool) -> String {
+    let encoded_riddle = RIDDLES[index];
+    let value;
+
+    if is_question {
+      value = BASE64.decode(encoded_riddle.get_question()).unwrap();
+    } else {
+      value = BASE64.decode(encoded_riddle.get_answer()).unwrap();
+    }
+
+    return String::from_utf8(value).expect("Found invalid UTF-8");
+  }
+
+  let riddle = decode_riddle(riddle_index, true);
+  let answer = decode_riddle(riddle_index, false);
+
+  // Sphinx
   println!("The Sphinx asks you the following question:");
-
-  let riddle = "There are two sisters: one gives birth to the other and she, in turn, gives birth to the first. Who are the two sisters?";
-  let answer = ["dayandnight", "day&night"];
-
-  // println!("{}", RIDDLES[0].get_question().to_string());
-  // println!("{}", RIDDLES[0].get_answer().to_string());
-
-  let test = BASE64.decode(RIDDLES[0].get_answer()).unwrap();
-
-  let test2 = String::from_utf8(test).expect("Found invalid UTF-8");
-
-  println!("{}", test2);
-
-  // println!("{:?}", BASE64.decode(RIDDLES[0].get_question()).unwrap());
-  // println!("{:?}", BASE64.decode(RIDDLES[0].get_answer()).unwrap());
-
-  // assert_eq!(BASE64.decode(RIDDLES[0].get_question()).unwrap(), b"hello");
-
   println!("{riddle}");
 
+  // Main gameplay loop
   loop {
     println!("What is your answer?");
 
