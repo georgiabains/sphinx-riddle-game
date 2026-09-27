@@ -5,24 +5,29 @@ use riddles::RIDDLES;
 use data_encoding::BASE64;
 
 fn main() { 
-  let riddle_index = 0; // TODO: Choose random index
 
-  // Decode riddle's question or answer
-  fn decode_riddle(index: usize, is_question: bool) -> String {
-    let encoded_riddle = RIDDLES[index];
-    let value;
-
-    if is_question {
-      value = BASE64.decode(encoded_riddle.get_question()).unwrap();
-    } else {
-      value = BASE64.decode(encoded_riddle.get_answer()).unwrap();
-    }
-
-    return String::from_utf8(value).expect("Found invalid UTF-8");
+  // Return decoded question
+  fn decode_question() -> String {
+    let encoded_riddle = BASE64.decode(RIDDLES[0].get_question()).unwrap();
+    return String::from_utf8(encoded_riddle).expect("Found invalid UTF-8");
   }
 
-  let riddle = decode_riddle(riddle_index, true);
-  let answer = decode_riddle(riddle_index, false);
+  // Return array of decoded answers
+  fn decode_answer() -> Vec<String> {
+    let encoded_answer_array = RIDDLES[0].get_answer();
+    let mut decoded_answer_array: Vec<String> = Vec::with_capacity(encoded_answer_array.len());
+
+    for encoded_answer in encoded_answer_array.iter() {
+      let answer = BASE64.decode(encoded_answer).unwrap();
+      let decoded_answer = String::from_utf8(answer).expect("Found invalid UTF-8");
+      decoded_answer_array.push(decoded_answer);
+    }
+
+    return decoded_answer_array;
+  }
+
+  let riddle = decode_question();
+  let answer = decode_answer();
 
   // Sphinx
   println!("The Sphinx asks you the following question:");
@@ -46,7 +51,7 @@ fn main() {
     println!("You guessed: {guess}");
 
     match sanitised_guess {
-      _ if answer.contains(&sanitised_guess.as_str()) => {
+      _ if answer.contains(&sanitised_guess) => {
         println!("you win");
         break;
       },
