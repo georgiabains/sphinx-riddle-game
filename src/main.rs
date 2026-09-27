@@ -1,13 +1,41 @@
+mod riddles;
+
+use rand;
 use std::io;
+use riddles::RIDDLES;
+use data_encoding::BASE64;
 
-fn main() {
+fn main() { 
+
+  // Return decoded question
+  fn decode_question(index: usize) -> String {
+    let encoded_riddle = BASE64.decode(RIDDLES[index].get_question()).unwrap();
+    return String::from_utf8(encoded_riddle).expect("Found invalid UTF-8");
+  }
+
+  // Return array of decoded answers
+  fn decode_answer(index: usize) -> Vec<String> {
+    let encoded_answer_array = RIDDLES[index].get_answer();
+    let mut decoded_answer_array: Vec<String> = Vec::with_capacity(encoded_answer_array.len());
+
+    for encoded_answer in encoded_answer_array.iter() {
+      let answer = BASE64.decode(encoded_answer).unwrap();
+      let decoded_answer = String::from_utf8(answer).expect("Found invalid UTF-8");
+      decoded_answer_array.push(decoded_answer);
+    }
+
+    return decoded_answer_array;
+  }
+
+  let riddle_index: usize = rand::random_range(0..RIDDLES.len());
+  let riddle = decode_question(riddle_index);
+  let answer = decode_answer(riddle_index);
+
+  // Sphinx
   println!("The Sphinx asks you the following question:");
-
-  let riddle = "There are two sisters: one gives birth to the other and she, in turn, gives birth to the first. Who are the two sisters?";
-  let answer = ["dayandnight", "day&night"];
-
   println!("{riddle}");
 
+  // Main gameplay loop
   loop {
     println!("What is your answer?");
 
@@ -25,7 +53,7 @@ fn main() {
     println!("You guessed: {guess}");
 
     match sanitised_guess {
-      _ if answer.contains(&sanitised_guess.as_str()) => {
+      _ if answer.contains(&sanitised_guess) => {
         println!("you win");
         break;
       },

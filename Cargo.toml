@@ -1,8 +1,12 @@
 [package]
 name = "sphinx-riddle-game"
-version = "0.1.0-alpha"
+version = "0.1.0-alpha.1"
 edition = "2024"
 
 [[bin]]
 name = "sphinx-riddle-game"
 path = "src/main.rs"
+
+[dependencies]
+data-encoding = "2.11.1"
+rand = "0.10.3"
