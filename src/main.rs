@@ -1,7 +1,8 @@
 mod riddles;
 
 use rand;
-use std::io;
+use std::fs::File;
+use std::io::{stdin, BufReader, BufWriter, Write, Read};
 use riddles::RIDDLES;
 use data_encoding::BASE64;
 
@@ -27,6 +28,19 @@ fn main() {
     return decoded_answer_array;
   }
 
+  let data = "Some data hello world!";
+  let f = File::create("./data/save.custom").expect("Should be able to create file");
+  let mut f = BufWriter::new(f);
+  f.write_all(data.as_bytes()).expect("Should be able to write data");
+
+  f.flush().unwrap();
+
+  let mut save_data = String::new();
+  let save = File::open("./data/save.custom").expect("Should be able to open `./data/save.custom`");
+  let mut br = BufReader::new(save);
+  br.read_to_string(&mut save_data).expect("Should be able to read to string");
+  println!("{}", save_data);
+
   let riddle_index: usize = rand::random_range(0..RIDDLES.len());
   let riddle = decode_question(riddle_index);
   let answer = decode_answer(riddle_index);
@@ -41,7 +55,7 @@ fn main() {
 
     let mut guess = String::new();
 
-    io::stdin()
+    stdin()
       .read_line(&mut guess)
       .expect("Failed to read line");
 
