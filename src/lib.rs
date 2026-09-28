@@ -20,3 +20,21 @@ impl Riddle<'_> {
     Riddle { question: &q, answer: &a }
   }
 }
+
+pub struct SaveData {
+  answered_riddle_indices: Vec<usize>,
+}
+
+impl SaveData {
+  pub fn get_answered_riddle_indices(&self) -> Vec<usize> {
+    self.answered_riddle_indices.clone()
+  }
+
+  pub const fn new() -> SaveData {
+    SaveData { answered_riddle_indices: vec![] }
+  }
+
+  pub fn add_riddle_index(&mut self, index: usize) -> () {
+    self.answered_riddle_indices.push(index)
+  }
+}

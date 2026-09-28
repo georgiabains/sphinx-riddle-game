@@ -6,6 +6,8 @@ use std::io::{stdin, BufReader, BufWriter, Write, Read};
 use riddles::RIDDLES;
 use data_encoding::BASE64;
 
+use sphinx_riddle_game::SaveData;
+
 fn main() { 
 
   // Return decoded question
@@ -28,6 +30,12 @@ fn main() {
     return decoded_answer_array;
   }
 
+  let mut save_data = SaveData::new();
+  save_data.add_riddle_index(2);
+  save_data.add_riddle_index(15);
+  save_data.add_riddle_index(99999);
+  println!("{:?}", save_data.get_answered_riddle_indices());
+
   let data = "Some data hello world!";
   let f = File::create("./data/save.custom").expect("Should be able to create file");
   let mut f = BufWriter::new(f);
@@ -35,11 +43,11 @@ fn main() {
 
   f.flush().unwrap();
 
-  let mut save_data = String::new();
+  let mut saved_data = String::new();
   let save = File::open("./data/save.custom").expect("Should be able to open `./data/save.custom`");
   let mut br = BufReader::new(save);
-  br.read_to_string(&mut save_data).expect("Should be able to read to string");
-  println!("{}", save_data);
+  br.read_to_string(&mut saved_data).expect("Should be able to read to string");
+  println!("{}", saved_data);
 
   let riddle_index: usize = rand::random_range(0..RIDDLES.len());
   let riddle = decode_question(riddle_index);
