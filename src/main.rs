@@ -2,11 +2,13 @@ mod riddles;
 
 use rand;
 use std::fs::File;
-use std::io::{stdin, BufReader, BufWriter, Write, Read};
+use std::io::{self, Seek, stdin, BufReader, BufWriter, Write, Read};
 use riddles::RIDDLES;
 use data_encoding::BASE64;
 
 use sphinx_riddle_game::SaveData;
+
+use serde::{Serialize, Deserialize};
 
 fn main() { 
 
@@ -31,20 +33,18 @@ fn main() {
   }
 
   let mut save_data = SaveData::new();
-  save_data.add_riddle_index(2);
-  save_data.add_riddle_index(15);
-  save_data.add_riddle_index(99999);
   println!("{:?}", save_data.get_answered_riddle_indices());
 
-  let data = "Some data hello world!";
-  let f = File::create("./data/save.custom").expect("Should be able to create file");
-  let mut f = BufWriter::new(f);
-  f.write_all(data.as_bytes()).expect("Should be able to write data");
+  // let deserialized: SaveData = serde_json::from_str(&serialized).unwrap();
+  // println!("deserialized = {:?}", deserialized);
 
-  f.flush().unwrap();
+  let f = File::create("./data/save.json").expect("Should be able to create file");
+  let mut f = BufWriter::new(f);
+  // f.write_all(serialized.as_bytes()).expect("Should be able to write data");
+  // f.flush().unwrap();
 
   let mut saved_data = String::new();
-  let save = File::open("./data/save.custom").expect("Should be able to open `./data/save.custom`");
+  let save = File::open("./data/save.json").expect("Should be able to open `./data/save.custom`");
   let mut br = BufReader::new(save);
   br.read_to_string(&mut saved_data).expect("Should be able to read to string");
   println!("{}", saved_data);
@@ -56,6 +56,8 @@ fn main() {
   // Sphinx
   println!("The Sphinx asks you the following question:");
   println!("{riddle}");
+
+  let mut serialized: String = "".to_string();
 
   // Main gameplay loop
   loop {
@@ -74,6 +76,17 @@ fn main() {
 
     println!("You guessed: {guess}");
 
+    save_data.add_riddle_index(riddle_index);
+
+    serialized = serde_json::to_string(&save_data).unwrap();
+    println!("serialized = {}", serialized);
+
+    println!("{:?}", f);
+
+    f.rewind().expect("Should be at the beginning of the file.");
+    f.write(serialized.as_bytes()).expect("Should be able to write data");
+    f.flush().unwrap();
+
     match sanitised_guess {
       _ if answer.contains(&sanitised_guess) => {
         println!("you win");
@@ -82,4 +95,6 @@ fn main() {
       _ => println!("Incorrect, try again")
     }
   }
+
+  println!("after loop");
 }

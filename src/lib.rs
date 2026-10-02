@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+use serde_json::Result;
+
 pub struct Riddle<'a> {
   question: &'a [u8],
   answer: &'a[&'a [u8]],
@@ -21,6 +24,7 @@ impl Riddle<'_> {
   }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SaveData {
   answered_riddle_indices: Vec<usize>,
 }
