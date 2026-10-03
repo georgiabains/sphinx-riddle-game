@@ -1,7 +1,7 @@
 mod riddles;
 
 use rand;
-use std::fs::{OpenOptions};
+use std::fs::{File, OpenOptions};
 use std::io::{self, Seek, stdin, BufReader, BufWriter, Write, Read};
 use riddles::RIDDLES;
 use data_encoding::BASE64;
@@ -38,8 +38,8 @@ fn main() {
   // let deserialized: SaveData = serde_json::from_str(&serialized).unwrap();
   // println!("deserialized = {:?}", deserialized);
 
-  let f = OpenOptions::new().write(true).create(true).open("./data/save.json").expect("Should be able to create file");
-  let mut f = BufWriter::new(f);
+  let mut f = OpenOptions::new().write(true).create(true).open("./data/save.json").expect("Should be able to create file");
+  // let mut f = BufWriter::new(f);
 
   let riddle_index: usize = rand::random_range(0..RIDDLES.len());
   let riddle = decode_question(riddle_index);
@@ -49,7 +49,7 @@ fn main() {
   println!("The Sphinx asks you the following question:");
   println!("{riddle}");
 
-  let mut serialized: String = "".to_string();
+  let mut serialized: String;
 
   // Main gameplay loop
   loop {
@@ -75,9 +75,9 @@ fn main() {
 
     println!("{:?}", f);
 
-    f.rewind().expect("Should be at the beginning of the file.");
-    f.write(serialized.as_bytes()).expect("Should be able to write data");
-    f.flush().unwrap();
+    f.set_len(0);
+    f.rewind();
+    f.write_all(serialized.as_bytes()).expect("Should be able to write data");
 
     match sanitised_guess {
       _ if answer.contains(&sanitised_guess) => {
@@ -87,6 +87,4 @@ fn main() {
       _ => println!("Incorrect, try again")
     }
   }
-
-  println!("after loop");
 }
