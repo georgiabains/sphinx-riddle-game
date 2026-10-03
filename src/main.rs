@@ -75,8 +75,8 @@ fn main() {
 
     println!("{:?}", f);
 
-    f.set_len(0);
-    f.rewind();
+    f.rewind().expect("Should be at beginning of file");
+    f.set_len(0).expect("File contents should be deleted");
     f.write_all(serialized.as_bytes()).expect("Should be able to write data");
 
     match sanitised_guess {
