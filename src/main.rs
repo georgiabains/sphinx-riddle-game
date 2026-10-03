@@ -1,7 +1,7 @@
 mod riddles;
 
 use rand;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io::{self, Seek, stdin, BufReader, BufWriter, Write, Read};
 use riddles::RIDDLES;
 use data_encoding::BASE64;
@@ -38,7 +38,7 @@ fn main() {
   // let deserialized: SaveData = serde_json::from_str(&serialized).unwrap();
   // println!("deserialized = {:?}", deserialized);
 
-  let f = File::create("./data/save.json").expect("Should be able to create file");
+  let f = OpenOptions::new().write(true).create(true).open("./data/save.json").expect("Should be able to create file");
   let mut f = BufWriter::new(f);
   // f.write_all(serialized.as_bytes()).expect("Should be able to write data");
   // f.flush().unwrap();
